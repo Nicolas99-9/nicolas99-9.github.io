@@ -1,0 +1,36 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import multipolyfit as mpf
+from sklearn.preprocessing import PolynomialFeatures
+
+#X is the independent variable (bivariate in this case)
+X = np.array([[0.44, 0.68], [0.99, 0.23]])
+
+#vector is the dependent data
+vector = [109.85, 155.72]
+
+#predict is an independent variable for which we'd like to predict the value
+predict= [0.49, 0.18]
+
+#generate a model of polynomial features
+poly = plt.PolynomialFeatures(degree=2)
+
+#transform the x data for proper fitting (for single variable type it returns,[1,x,x**2])
+X_ = poly.fit_transform(X)
+
+#transform the prediction to fit the model type
+predict_ = poly.fit_transform(predict)
+
+#here we can remove polynomial orders we don't want
+#for instance I'm removing the `x` component
+X_ = delete(X_,(1),axis=1)
+predict_ = delete(predict_,(1),axis=1)
+
+#generate the regression object
+clf = linear_model.LinearRegression()
+#preform the actual regression
+clf.fit(X_, vector)
+
+print("X_ = ",X_)
+print("predict_ = ",predict_)
+print("Prediction = ",clf.predict(predict_))
