@@ -3,6 +3,11 @@ from pprint import pprint
 import codecs
 import matplotlib.pyplot as plt 
 from sklearn import linear_model
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import Pipeline
+
+# sudo pip install cython
+#sudo python setup.py build_ext --inplace
 
 dico1 = {'jan' : 1, 'feb' : 2 , 'mar' : 3 , 'apr' : 4 , 'may' : 5 , 'jun' : 6 , 'jul' : 7 , 'aug' : 8 , 'sep' : 9 , 'aug' : 10 , 'oct' : 11 , 'nov' : 11 , 'dec' : 12}
 
@@ -134,8 +139,19 @@ def regression_linaire(dicon,value,test,test_value):
     clf.fit(dicon.values(),value.values())
     print("coefficient : " ,clf.coef_)
     print("score de la regression lineaire simple : ", clf.score(test.values(),test_value.values()))
-    question1(clf)
+    #question1(clf)
 
+def regression_polynomiale(dicon,value, test, test_value,degre):
+    X = dicon.values()
+    poly = PolynomialFeatures(degree=degre) #transform the input to the polynomial model
+    poly.fit_transform(X)
+    print(dicon.values())
+    model = Pipeline([('poly', PolynomialFeatures(degree=degre)),('linear', linear_model.LinearRegression(fit_intercept=False))])
+    model.fit(X,value.values())
+    model.named_steps['linear'].coef_
+    print("prediction du model polynomial  : ", model.named_steps['linear'].predict(poly.fit_transform([4.0, 5.0, 9, 2, 91.1, 132.3, 812.1, 12.5, 15.9, 38.0, 5.4])))
+    
+    
 (dico,value,test,test_value)  = read_filess("forestfires.csv")
-pprint(dico)
 regression_linaire(dico,value,test,test_value)
+regression_polynomiale(dico,value,test,test_value,5)

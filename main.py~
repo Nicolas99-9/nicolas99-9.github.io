@@ -3,6 +3,11 @@ from pprint import pprint
 import codecs
 import matplotlib.pyplot as plt 
 from sklearn import linear_model
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import Pipeline
+
+# sudo pip install cython
+#sudo python setup.py build_ext --inplace
 
 dico1 = {'jan' : 1, 'feb' : 2 , 'mar' : 3 , 'apr' : 4 , 'may' : 5 , 'jun' : 6 , 'jul' : 7 , 'aug' : 8 , 'sep' : 9 , 'aug' : 10 , 'oct' : 11 , 'nov' : 11 , 'dec' : 12}
 
@@ -124,7 +129,7 @@ def question1(model):
     e11 = raw_input("Wind (0.40 to 9.40 )")
     e12 = raw_input("Rain mm (0.0 to 6.4 )")
     print([e1,e2,e3,e4,e5,e6,e7,e9,e10,e11,e12])
-    print("area estimate of the fire (in ha)  : " ,  model.predict([e1,e2,e3,e4,e5,e6,e7,e9,e10,e11,e12])) 
+    print("area estimate of the fire (in ha)  : " ,  model.predict([float(e1),float(e2),float(e3),float(e4),float(e5),float(e6),float(e7),float(e9),float(e10),float(e11),float(e12)])) 
 
 
 
@@ -134,8 +139,17 @@ def regression_linaire(dicon,value,test,test_value):
     clf.fit(dicon.values(),value.values())
     print("coefficient : " ,clf.coef_)
     print("score de la regression lineaire simple : ", clf.score(test.values(),test_value.values()))
-    question1(clf)
+    #question1(clf)
 
+def regression_polynomiale(dicon,value, test, test_value,degre):
+    poly = PolynomialFeatures(degree=degre) #transform the input to the polynomial model
+    poly.fit_transform(dicon)
+    model = Pipeline([('poly', PolynomialFeatures(degree=degre)),('linear', LinearRegression(fit_intercept=False))])
+    model.fit(poly, value)
+    model.named_steps['linear'].coef_
+    
+    
 (dico,value,test,test_value)  = read_filess("forestfires.csv")
 pprint(dico)
 regression_linaire(dico,value,test,test_value)
+regression_polynomiale(dico,value,test,test_value,5)
